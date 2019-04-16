@@ -8,7 +8,7 @@
 
 ### Description
 
-This project is a simple cold storage wallet
+This project is a simple cold storage wallet, that allows you to work with crypto currency in a cold storage device.
 
 
 ### Installation
@@ -40,7 +40,6 @@ npm start
 
 ### Project Structure
 ```
-public # directory with public access, works as static server
 src # directory with all source code
     app # all app source code
     btc # code related to bitcoin (address generation, tx sign)
