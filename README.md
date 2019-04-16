@@ -16,10 +16,10 @@ This project is a simple cold storage wallet
 You can install this project with the following commands:
 ```shell
 # clone the repository
-git clone https://github.com/dgaydukov/nodejs-quickstart
+git clone https://github.com/dgaydukov/crypto-cold-storage
 
 # go to repo
-cd nodejs-quickstart
+cd crypto-cold-storage
 
 # install
 npm i
@@ -43,6 +43,8 @@ npm start
 public # directory with public access, works as static server
 src # directory with all source code
     app # all app source code
+    btc # code related to bitcoin (address generation, tx sign)
+    eth # code related to ethereum (address generation, tx sign)
 test # tests that run on commit, push, deploy
 ```
 
