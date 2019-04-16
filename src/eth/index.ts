@@ -17,7 +17,7 @@
       //   const address = account.address;
 
         const privateKey = '0x5fe128c58e43224a81ffecbc2166c3e05649b8103e66eae0124663cb2008b546'
-        const address = util.pubToAddress(util.privateToPublic(privateKey)).toString('hex');
+        const address = '0x' + util.pubToAddress(util.privateToPublic(privateKey)).toString('hex');
 
         const sig = this.sign(msg, Buffer.from(privateKey.substr(2), 'hex'));
         const recover = this.recover(msg, sig);
