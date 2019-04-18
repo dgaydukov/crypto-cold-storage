@@ -3,6 +3,7 @@ require('dotenv').config()
 import * as Koa from 'koa';
 import * as Router from 'koa-router';
 import EthStorage from '../eth';
+import BtcStorage from '../btc';
 const port = process.env.APP_PORT;
 
 const app = new Koa();
@@ -11,7 +12,9 @@ const router = new Router({
 });
 
 const eth = new EthStorage();
-eth.run();
+//eth.run();
+const btc = new BtcStorage();
+btc.run();
 
 app.use(router.routes());
 
