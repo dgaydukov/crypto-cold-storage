@@ -2,33 +2,41 @@
  * Different interfaces used accross the project
  */
 
-export interface IWallet{
+export interface IWallet {
     privateKey: string;
     publicKey: string;
     address: string;
 }
 
-export interface IHDWallet{
+export interface IHDWallet {
     masterPrivateKey: string;
     masterPublicKey: string;
 }
 
-export interface IEthTxOpts{
+export interface IEthTxOpts {
     nonce: string
-    gasPrice: string, 
+    gasPrice: string,
     gasLimit: string,
-    to: string, 
-    value: string, 
+    to: string,
+    value: string,
     data: string,
     chainId: number,
 }
 
-export interface IBtcTxOpts{
+export interface IBtcTo {
+    address: string;
+    value: string;
+}
+
+export interface IBtcTxOpts {
+    from: string[],
+    to: IBtcTo[],
+    changeAddress?: string;
 }
 
 export type ITxOpts = IEthTxOpts | IBtcTxOpts;
 
-export interface ICryptoStorage{
+export interface ICryptoStorage {
     generateHdWallet(): IHDWallet;
 
     deriveWallet(index: string, masterPrivateKey: string): IWallet;
