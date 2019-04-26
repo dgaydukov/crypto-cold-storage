@@ -4,20 +4,22 @@
  * If we want to generate keys, we can use randomBytes from crypto library
  * To work with tx building we need ethereumjs-tx library
  * 
- * https://github.com/ethereumjs/ethereumjs-util
- * https://github.com/ethereumjs/ethereumjs-tx
- * https://github.com/cryptocoinjs/secp256k1-node
+ * https://github.com/ethereumjs/ethereumjs-util - utils work with eth
+ * https://github.com/ethereumjs/ethereumjs-tx - generate tx
+ * https://github.com/cryptocoinjs/hdkey - use to generate hd wallet based on seed
+ * https://github.com/bitcoinjs/bip39 - use to generate mnemonic seed
+ * https://github.com/cryptocoinjs/secp256k1-node - not used directly here, but ethereumjs-util based on it
  */
 
 const { randomBytes } = require('crypto');
 const util = require('ethereumjs-util');
-const EthereumTx = require('ethereumjs-tx')
+const EthereumTx = require('ethereumjs-tx');
 const bip39 = require('bip39');
-const HDKey = require('hdkey')
+const HDKey = require('hdkey');
 import {ICryptoStorage} from '../app/interfaces';
  
 
- export default class EthStorage implements ICryptoStorage{
+ export default class EthStorage implements ICryptoStorage {
 
    generateHdWallet(){
       const mnemonic = bip39.generateMnemonic();
@@ -36,12 +38,11 @@ import {ICryptoStorage} from '../app/interfaces';
       const privateKey = child.privateKey;
       const publicKey = util.privateToPublic(child.privateKey);
       const address = util.pubToAddress(publicKey);
-      const keyPair = {
+      return {
          privateKey: privateKey.toString('hex'),
          publicKey: publicKey.toString('hex'),
          address: '0x' + address.toString('hex'),
       };
-      return keyPair;
    }
 
    generateWallet(){
@@ -57,13 +58,11 @@ import {ICryptoStorage} from '../app/interfaces';
 
       const publicKey = util.privateToPublic(privateKey);
       const address = util.pubToAddress(publicKey);
-      const keyPair = {
+      return {
          privateKey: privateKey.toString('hex'),
          publicKey: publicKey.toString('hex'),
          address: '0x' + address.toString('hex'),
       }
-
-      return keyPair;
    }
 
    getAddressFromPrivateKey(privateKey){
