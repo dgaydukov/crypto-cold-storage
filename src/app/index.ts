@@ -12,9 +12,7 @@ const router = new Router({
 });
 
 const eth = new EthStorage();
-//eth.run();
 const btc = new BtcStorage();
-btc.run();
 
 app.use(router.routes());
 

@@ -11,19 +11,15 @@ export interface IKeyPair{
 export interface ICryptoStorage{
     generateKeyPair(): IKeyPair;
 
-    /**
-     * Get address either from private or public key
-     * @param key 
-     */
-    getAddressFromKey(key: string): string;
+    getAddressFromPrivateKey(privateKey: string): string;
+
+    getAddressFromPublicKey(publicKey: string): string;
 
     validateAddress(address: string): boolean;
 
-    sign(msg: string, key: string): string;
+    sign(msg: string, privateKey: string): string;
 
-    verify(msg: string, hash: string): boolean;
+    verify(msg: string, sig: string, publicKey: string): boolean;
 
-    getAddressFromSignature(hash: string): string;
-
-    getRawTx(txOptions: any): string;
+    recoverPublicKey(msg: string, sig: string): string;
 }

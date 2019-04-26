@@ -2,44 +2,59 @@
  * Ethereum Cold Storage
  */
 
- const util = require('ethereumjs-util');
- const Web3 = require("web3");
- const web3 = new Web3();
-
+const util = require('ethereumjs-util');
+const { randomBytes } = require('crypto');
+import {ICryptoStorage} from '../app/interfaces';
  
 
- export default class EthStorage{
-     run(){
-        const msg = 'hello world!';
+ export default class EthStorage implements ICryptoStorage{
 
-      //   const account = web3.eth.accounts.create();
-      //   const privateKey = account.privateKey;
-      //   const address = account.address;
+   generateKeyPair(){
+      const privateKey = randomBytes(32);
+      const publicKey = util.privateToPublic(privateKey);
+      const address = util.pubToAddress(publicKey);
+      const keyPair = {
+         privateKey: privateKey.toString('hex'),
+         publicKey: publicKey.toString('hex'),
+         address: '0x' + address.toString('hex'),
+      }
+      return keyPair;
+   }
 
-        const privateKey = '0x5fe128c58e43224a81ffecbc2166c3e05649b8103e66eae0124663cb2008b546'
-        const address = '0x' + util.pubToAddress(util.privateToPublic(privateKey)).toString('hex');
+   getAddressFromPrivateKey(privateKey){
+      const publicKey = util.privateToPublic(Buffer.from(privateKey, 'hex'));
+      const address = util.pubToAddress(publicKey);
+      return '0x' + address.toString('hex');
+   }
 
-        const sig = this.sign(msg, Buffer.from(privateKey.substr(2), 'hex'));
-        const recover = this.recover(msg, sig);
-        
-        console.log(address, recover)
-     } 
+   getAddressFromPublicKey(publicKey){
+      const address = util.pubToAddress(Buffer.from(publicKey, 'hex'));
+      return '0x' + address.toString('hex');
+   }
 
-     sign(msg: string, privateKey: Buffer): string{
-        const hash = util.sha256(msg);
-        const sig = util.ecsign(hash, privateKey);
-        return '0x' + sig.r.toString('hex') + sig.s.toString('hex') + sig.v.toString(16).toString();
-     } 
+   validateAddress(address){
+      return util.isValidAddress(address);
+   }
 
-     recover(msg: string, sig: string){
-        const r = Buffer.from(sig.substr(2, 64), 'hex');
-        const s = Buffer.from(sig.substr(66, 64), 'hex');
-        const v = Number('0x' + sig.substr(130, 2));
-        const hash = util.sha256(msg);
-        
-        const publicKey = util.ecrecover(hash, v, r, s);
-        const address = '0x' + util.pubToAddress(publicKey).toString('hex');
-        return address;
-     }
+   sign(msg, privateKey){
+      const hash = util.sha256(msg);
+      const sig = util.ecsign(hash, Buffer.from(privateKey, 'hex'));
+      return '0x' + sig.r.toString('hex') + sig.s.toString('hex') + sig.v.toString(16);
+   }
+
+   verify(msg, sig, publicKey){
+      const recoveredPublicKey = this.recoverPublicKey(msg, sig);
+      return recoveredPublicKey === publicKey;
+   }
+
+   recoverPublicKey(msg, sig){
+      const r = Buffer.from(sig.substr(2, 64), 'hex');
+      const s = Buffer.from(sig.substr(66, 64), 'hex');
+      const v = Number('0x' + sig.substr(130, 2));
+      const hash = util.sha256(msg);
+      
+      const publicKey = util.ecrecover(hash, v, r, s);
+      return publicKey.toString('hex');
+   }
  }  
 
