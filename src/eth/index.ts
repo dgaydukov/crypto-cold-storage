@@ -19,12 +19,6 @@ import {ICryptoStorage} from '../app/interfaces';
 
  export default class EthStorage implements ICryptoStorage{
 
-   constructor(){
-      const wallet = this.generateHdWallet();
-      const keyPair = this.deriveKeyPair(123, wallet.masterPrivateKey);
-      console.log(keyPair)
-   }
-
    generateHdWallet(){
       const mnemonic = bip39.generateMnemonic();
       const seed = bip39.mnemonicToSeedSync(mnemonic);
@@ -35,7 +29,7 @@ import {ICryptoStorage} from '../app/interfaces';
       }
    }
 
-   deriveKeyPair(index, masterPrivateKey){
+   deriveWallet(index, masterPrivateKey){
       const hdkey = HDKey.fromExtendedKey(masterPrivateKey);
       const path = `m/44'/60'/0'/0/${index}`;
       const child = hdkey.derive(path);
@@ -50,7 +44,7 @@ import {ICryptoStorage} from '../app/interfaces';
       return keyPair;
    }
 
-   generateKeyPair(){
+   generateWallet(){
       /**
        * It is adviced to check whether we generate correct private key or not here https://github.com/cryptocoinjs/secp256k1-node
        * But from my personal experience, I can say, that randomBytes always generate right key, moreover, privatekey - just a number

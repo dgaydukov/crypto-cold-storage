@@ -2,10 +2,15 @@
  * Different interfaces used accross the project
  */
 
-export interface IKeyPair{
+export interface IWallet{
     privateKey: string;
     publicKey: string;
     address: string;
+}
+
+export interface IHDWallet{
+    masterPrivateKey: string;
+    masterPublicKey: string;
 }
 
 export interface IEthTxOpts{
@@ -24,7 +29,11 @@ export interface IBtcTxOpts{
 export type ITxOpts = IEthTxOpts | IBtcTxOpts;
 
 export interface ICryptoStorage{
-    generateKeyPair(): IKeyPair;
+    generateHdWallet(): IHDWallet;
+
+    deriveWallet(index: string, masterPrivateKey: string): IWallet;
+
+    generateWallet(): IWallet;
 
     getAddressFromPrivateKey(privateKey: string): string;
 
