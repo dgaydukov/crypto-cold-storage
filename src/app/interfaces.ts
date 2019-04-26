@@ -33,7 +33,13 @@ export interface ICryptoStorage{
 
     deriveWallet(index: string, masterPrivateKey: string): IWallet;
 
-    generateWallet(): IWallet;
+    /**
+     * If we set private key directly, we generate wallet based on this private key, 
+     * otherwise we generate new random private key
+     * 
+     * @param privateKey {string}
+     */
+    generateWallet(privateKey?: string): IWallet;
 
     getAddressFromPrivateKey(privateKey: string): string;
 

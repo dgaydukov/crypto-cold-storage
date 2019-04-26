@@ -35,26 +35,23 @@ import {ICryptoStorage} from '../app/interfaces';
       const hdkey = HDKey.fromExtendedKey(masterPrivateKey);
       const path = `m/44'/60'/0'/0/${index}`;
       const child = hdkey.derive(path);
-      const privateKey = child.privateKey;
-      const publicKey = util.privateToPublic(child.privateKey);
-      const address = util.pubToAddress(publicKey);
-      return {
-         privateKey: privateKey.toString('hex'),
-         publicKey: publicKey.toString('hex'),
-         address: '0x' + address.toString('hex'),
-      };
+      return this.generateWallet(child.privateKey.toString('hex'));
    }
 
-   generateWallet(){
+   generateWallet(privateKey){
       /**
        * It is adviced to check whether we generate correct private key or not here https://github.com/cryptocoinjs/secp256k1-node
        * But from my personal experience, I can say, that randomBytes always generate right key, moreover, privatekey - just a number
        * it can't be incorrect. But just in case...
        */
-      let privateKey;
-      do {
-         privateKey = randomBytes(32)
-      } while (!util.isValidPrivate(privateKey));
+      if(privateKey) {
+         privateKey = Buffer.from(privateKey, 'hex');
+      }
+      else{
+         do {
+            privateKey = randomBytes(32)
+         } while (!util.isValidPrivate(privateKey));
+      }
 
       const publicKey = util.privateToPublic(privateKey);
       const address = util.pubToAddress(publicKey);
@@ -67,8 +64,7 @@ import {ICryptoStorage} from '../app/interfaces';
 
    getAddressFromPrivateKey(privateKey){
       const publicKey = util.privateToPublic(Buffer.from(privateKey, 'hex'));
-      const address = util.pubToAddress(publicKey);
-      return '0x' + address.toString('hex');
+      return this.getAddressFromPublicKey(publicKey);
    }
 
    getAddressFromPublicKey(publicKey){

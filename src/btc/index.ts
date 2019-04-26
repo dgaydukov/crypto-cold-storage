@@ -27,12 +27,20 @@
     }
 
     deriveWallet(index, masterPrivateKey){
-        const wallet = this.generateWallet();
-        return wallet;
+        const hdkey = HDKey.fromExtendedKey(masterPrivateKey);
+        const path = `m/44'/60'/0'/0/${index}`;
+        const child = hdkey.derive(path);
+        return this.generateWallet(child.privateKey.toString('hex'));
     }
     
-    generateWallet(){
-        const wallet = ECPair.makeRandom();
+    generateWallet(privateKey){
+        let wallet;
+        if(privateKey){
+            wallet = ECPair.fromPrivateKey(Buffer.from(privateKey, 'hex'));
+        }
+        else{
+            wallet = ECPair.makeRandom();
+        }
         const { address } = payments.p2pkh({ pubkey: wallet.publicKey })
         return {
             privateKey: wallet.privateKey.toString('hex'),
