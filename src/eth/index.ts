@@ -1,9 +1,12 @@
 /**
  * Ethereum Cold Storage
+ * Basically we neeed only one library ethereumjs-util. That would be enough for everything
+ * If we want to generate keys, we can use randomBytes from crypto library
  */
 
-const util = require('ethereumjs-util');
 const { randomBytes } = require('crypto');
+const util = require('ethereumjs-util');
+const EthereumTx = require('ethereumjs-tx')
 import {ICryptoStorage} from '../app/interfaces';
  
 
@@ -55,6 +58,13 @@ import {ICryptoStorage} from '../app/interfaces';
       
       const publicKey = util.ecrecover(hash, v, r, s);
       return publicKey.toString('hex');
+   }
+
+   buildRawTx(otps, privateKey){
+      const tx = new EthereumTx(otps);
+      tx.sign(privateKey);
+      const serializedTx = tx.serialize();
+      return serializedTx;
    }
  }  
 

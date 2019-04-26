@@ -8,6 +8,21 @@ export interface IKeyPair{
     address: string;
 }
 
+export interface IEthTxOpts{
+    nonce: string
+    gasPrice: string, 
+    gasLimit: string,
+    to: string, 
+    value: string, 
+    data: string,
+    chainId: number,
+}
+
+export interface IBtcTxOpts{
+}
+
+export type ITxOpts = IEthTxOpts | IBtcTxOpts;
+
 export interface ICryptoStorage{
     generateKeyPair(): IKeyPair;
 
@@ -22,4 +37,6 @@ export interface ICryptoStorage{
     verify(msg: string, sig: string, publicKey: string): boolean;
 
     recoverPublicKey(msg: string, sig: string): string;
+
+    buildRawTx(opts: ITxOpts, privateKey: string): string;
 }
