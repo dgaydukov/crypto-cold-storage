@@ -5,9 +5,10 @@
 import { ECPair, payments, TransactionBuilder, address as BitcoinAddress } from 'bitcoinjs-lib';
 const bip39 = require('bip39');
 const HDKey = require('hdkey');
-import { ICryptoStorage } from '../app/interfaces';
 const secp256k1 = require('secp256k1')
 const { createHash } = require('crypto');
+const coinSelect = require('coinselect');
+import { ICryptoStorage } from '../app/interfaces';
 
 export default class BtcStorage implements ICryptoStorage {
 
@@ -15,19 +16,19 @@ export default class BtcStorage implements ICryptoStorage {
         //this.checkSign();
     }
 
-    checkSign(){
+    checkSign() {
         /**
          * check signage with bitcoin-cli, to be sure we correctly sign message
          */
         const privateKey = 'a121f2bd62a5126dcd4ee357ec783b7678b262e545342ed4986aed7c47dd3129';
         const msg = 'hello world!';
         const publicKey = this.getPublicKeyFromPrivateKey(privateKey);
-        
+
         const sig = this.sign(msg, privateKey);
         const check = this.verify(msg, sig, publicKey);
         console.log(check, sig)
     }
-    
+
     generateHdWallet() {
         const mnemonic = bip39.generateMnemonic();
         const seed = bip39.mnemonicToSeedSync(mnemonic);
@@ -82,9 +83,9 @@ export default class BtcStorage implements ICryptoStorage {
         }
     }
 
-    getPublicKeyFromPrivateKey(privateKey){
-       const wallet = ECPair.fromPrivateKey(Buffer.from(privateKey, 'hex'));
-       return wallet.publicKey.toString('hex');
+    getPublicKeyFromPrivateKey(privateKey) {
+        const wallet = ECPair.fromPrivateKey(Buffer.from(privateKey, 'hex'));
+        return wallet.publicKey.toString('hex');
     }
 
     sign(msg, privateKey) {
@@ -99,7 +100,7 @@ export default class BtcStorage implements ICryptoStorage {
         return secp256k1.verify(Buffer.from(messageHash, 'hex'), Buffer.from(sig, 'base64'), Buffer.from(publicKey, 'hex'));;
     }
 
-    hashMessage(msg){
+    hashMessage(msg) {
         const prefixMsgBuffer = Buffer.from('Bitcoin Signed Message:\n');
         const messageBuffer = Buffer.from(msg);
         const prefix1 = Buffer.from(prefixMsgBuffer.length.toString());
@@ -109,7 +110,7 @@ export default class BtcStorage implements ICryptoStorage {
     }
 
 
-    sha256(msg){
+    sha256(msg) {
         return createHash('sha256').update(msg).digest('hex');
     }
 
@@ -117,15 +118,34 @@ export default class BtcStorage implements ICryptoStorage {
         return '';
     }
 
-    buildRawTx(opts, privateKey) {
-        const tx = new TransactionBuilder();
+    buildRawTx(opts, baseFeeRate) {
         opts.from.map((key, i) => {
             tx.addInput("", 1);
-            tx.sign(i, key)
         });
-        for (const to of opts.to) {
-            tx.addOutput(to.address, to.value);
-        }
+
+        const { inputs, outputs, fee } = coinSelect(opts.from, opts.to, baseFeeRate);
+
+        // the accumulated fee is always returned for analysis
+        console.log(`total fee is: ${fee}`);
+
+        // .inputs and .outputs will be undefined if no solution was found
+        if (!inputs || !outputs) return
+
+        let tx = new TransactionBuilder()
+
+        inputs.forEach((input, i) => {
+            tx.addInput(input.txId, input.vout);
+            tx.sign(i, input.privateKey);
+        });
+        outputs.forEach(output => {
+            // watch out, outputs may have been added that you need to provide
+            // an output address/script for
+            if (!output.address) {
+                output.address = opts.changeAddress;
+            }
+            tx.addOutput(output.address, output.value);
+        })
+
         return tx.build().toHex();
     }
 }

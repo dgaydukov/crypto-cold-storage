@@ -23,15 +23,23 @@ export interface IEthTxOpts {
     chainId: number,
 }
 
-export interface IBtcTo {
+export interface IUTXO {
+    privateKey: string;
     address: string;
+    value: string;
+    txId: string;
+    vout: number;
+}
+
+export interface ITarget {
+    to: string;
     value: string;
 }
 
 export interface IBtcTxOpts {
-    from: string[],
-    to: IBtcTo[],
-    changeAddress?: string;
+    from: IUTXO[],
+    to: ITarget[],
+    changeAddress: string;
 }
 
 export type ITxOpts = IEthTxOpts | IBtcTxOpts;
