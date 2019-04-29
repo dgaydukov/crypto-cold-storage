@@ -11,9 +11,6 @@ import { ICryptoStorage } from '../app/interfaces';
 export default class BtcStorage implements ICryptoStorage {
 
     constructor() {
-        console.log(
-            this.validateAddress('1MQrMtb91P333NPcvTsDkgE42ZqRQHzJPH')
-        )
     }
 
     generateHdWallet() {

@@ -59,6 +59,8 @@ export interface ICryptoStorage {
 
     verify(msg: string, sig: string, publicKey: string): boolean;
 
+    hashMessage(msg: string): string;
+
     recoverPublicKey(msg: string, sig: string): string;
 
     buildRawTx(opts: ITxOpts, privateKey: string): string;

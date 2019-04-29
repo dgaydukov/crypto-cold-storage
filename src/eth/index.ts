@@ -21,6 +21,13 @@ import { ICryptoStorage } from '../app/interfaces';
 
 export default class EthStorage implements ICryptoStorage {
 
+   constructor(){
+      const privateKey = 'a121f2bd62a5126dcd4ee357ec783b7678b262e545342ed4986aed7c47dd3129';
+      const msg = 'hello world!';
+      const hash = this.sign(msg, privateKey);
+      console.log(hash);
+   }
+
    generateHdWallet() {
       const mnemonic = bip39.generateMnemonic();
       const seed = bip39.mnemonicToSeedSync(mnemonic);
@@ -38,7 +45,7 @@ export default class EthStorage implements ICryptoStorage {
       return this.generateWallet(child.privateKey.toString('hex'));
    }
 
-   generateWallet(privateKey) {
+   generateWallet(privateKey?) {
       /**
        * It is adviced to check whether we generate correct private key or not here https://github.com/cryptocoinjs/secp256k1-node
        * But from my personal experience, I can say, that randomBytes always generate right key, moreover, privatekey - just a number
@@ -77,7 +84,7 @@ export default class EthStorage implements ICryptoStorage {
    }
 
    sign(msg, privateKey) {
-      const hash = util.sha256(msg);
+      const hash = this.hashMessage(msg);
       const sig = util.ecsign(hash, Buffer.from(privateKey, 'hex'));
       return '0x' + sig.r.toString('hex') + sig.s.toString('hex') + sig.v.toString(16);
    }
@@ -87,11 +94,19 @@ export default class EthStorage implements ICryptoStorage {
       return recoveredPublicKey === publicKey;
    }
 
+   hashMessage(msg: string){
+      const message = Buffer.from(msg);
+      const prefix = Buffer.from('\x19Ethereum Signed Message:\n' + message.length.toString())
+      const finalMessage = Buffer.concat([prefix, message])
+      const hash = util.keccak(finalMessage);
+      return hash;
+   }
+
    recoverPublicKey(msg, sig) {
       const r = Buffer.from(sig.substr(2, 64), 'hex');
       const s = Buffer.from(sig.substr(66, 64), 'hex');
       const v = Number('0x' + sig.substr(130, 2));
-      const hash = util.sha256(msg);
+      const hash = this.hashMessage(msg);
 
       const publicKey = util.ecrecover(hash, v, r, s);
       return publicKey.toString('hex');
