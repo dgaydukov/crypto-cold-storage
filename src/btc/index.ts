@@ -7,8 +7,8 @@ const bip39 = require('bip39');
 const HDKey = require('hdkey');
 import { ICryptoStorage } from '../app/interfaces';
 
-// var bitcore = require('bitcore-lib');
-// var Message = require('bitcore-message');
+var bitcore = require('bitcore-lib');
+var Message = require('bitcore-message');
 
 export default class BtcStorage implements ICryptoStorage {
 
