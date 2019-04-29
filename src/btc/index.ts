@@ -7,10 +7,18 @@ const bip39 = require('bip39');
 const HDKey = require('hdkey');
 import { ICryptoStorage } from '../app/interfaces';
 
+// var bitcore = require('bitcore-lib');
+// var Message = require('bitcore-message');
 
 export default class BtcStorage implements ICryptoStorage {
 
     constructor() {
+    //   const privateKey = 'a121f2bd62a5126dcd4ee357ec783b7678b262e545342ed4986aed7c47dd3129';
+    //   const publicKey = this.getPublicKeyFromPrivateKey(privateKey);
+      
+    //   var privateKey = bitcore.PrivateKey.fromWIF('cPBn5A4ikZvBTQ8D7NnvHZYCAxzDZ5Z2TSGW2LkyPiLxqYaJPBW4');
+    //   var signature = Message('hello, world').sign(privateKey);
+    //   console.log(signature)
     }
 
     generateHdWallet() {
@@ -30,7 +38,7 @@ export default class BtcStorage implements ICryptoStorage {
         return this.generateWallet(child.privateKey.toString('hex'));
     }
 
-    generateWallet(privateKey) {
+    generateWallet(privateKey?) {
         let wallet;
         if (privateKey) {
             wallet = ECPair.fromPrivateKey(Buffer.from(privateKey, 'hex'));
@@ -68,7 +76,8 @@ export default class BtcStorage implements ICryptoStorage {
     }
 
     getPublicKeyFromPrivateKey(privateKey){
-        return '';
+       const wallet = ECPair.fromPrivateKey(Buffer.from(privateKey, 'hex'));
+       return wallet.publicKey.toString('hex');
     }
 
     sign(msg, privateKey) {
