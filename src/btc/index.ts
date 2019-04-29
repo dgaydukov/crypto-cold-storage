@@ -67,12 +67,20 @@ export default class BtcStorage implements ICryptoStorage {
         }
     }
 
+    getPublicKeyFromPrivateKey(privateKey){
+        return '';
+    }
+
     sign(msg, privateKey) {
         return '';
     }
 
     verify(msg, sig, publicKey) {
         return false;
+    }
+
+    hashMessage(msg){
+        return '';
     }
 
     recoverPublicKey(msg, sig) {

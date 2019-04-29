@@ -22,10 +22,22 @@ import { ICryptoStorage } from '../app/interfaces';
 export default class EthStorage implements ICryptoStorage {
 
    constructor(){
+      //this.checkSign();
+   }
+
+   checkSign(){
+      /**
+       * check this signing with geth
+       * It was written, that geth use sha3 for hashing message before sign, but it turns out it use keccak
+       * well, at least https://www.myetherwallet.com/ sign the same way
+       * So need to check it out
+       */
       const privateKey = 'a121f2bd62a5126dcd4ee357ec783b7678b262e545342ed4986aed7c47dd3129';
       const msg = 'hello world!';
-      const hash = this.sign(msg, privateKey);
-      console.log(hash);
+      const publicKey = this.getPublicKeyFromPrivateKey(privateKey);
+      const sig = this.sign(msg, privateKey);
+      const verify = this.verify(msg, sig, publicKey);
+      console.log(verify, sig);
    }
 
    generateHdWallet() {
@@ -77,6 +89,11 @@ export default class EthStorage implements ICryptoStorage {
    getAddressFromPublicKey(publicKey) {
       const address = util.pubToAddress(Buffer.from(publicKey, 'hex'));
       return '0x' + address.toString('hex');
+   }
+
+   getPublicKeyFromPrivateKey(privateKey){
+      const publicKey = util.privateToPublic(Buffer.from(privateKey, 'hex'));
+      return publicKey.toString('hex');
    }
 
    validateAddress(address) {

@@ -53,6 +53,8 @@ export interface ICryptoStorage {
 
     getAddressFromPublicKey(publicKey: string): string;
 
+    getPublicKeyFromPrivateKey(privateKey: string): string;
+
     validateAddress(address: string): boolean;
 
     sign(msg: string, privateKey: string): string;
