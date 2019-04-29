@@ -12,15 +12,22 @@ const { createHash } = require('crypto');
 export default class BtcStorage implements ICryptoStorage {
 
     constructor() {
-      const privateKey = 'a121f2bd62a5126dcd4ee357ec783b7678b262e545342ed4986aed7c47dd3129';
-      const msg = 'hello world!';
-      const publicKey = this.getPublicKeyFromPrivateKey(privateKey);
-      
-      const sig = this.sign(msg, privateKey);
-      const check = this.verify(msg, sig, publicKey);
-      console.log(check, sig)
-    } 
+        //this.checkSign();
+    }
 
+    checkSign(){
+        /**
+         * check signage with bitcoin-cli, to be sure we correctly sign message
+         */
+        const privateKey = 'a121f2bd62a5126dcd4ee357ec783b7678b262e545342ed4986aed7c47dd3129';
+        const msg = 'hello world!';
+        const publicKey = this.getPublicKeyFromPrivateKey(privateKey);
+        
+        const sig = this.sign(msg, privateKey);
+        const check = this.verify(msg, sig, publicKey);
+        console.log(check, sig)
+    }
+    
     generateHdWallet() {
         const mnemonic = bip39.generateMnemonic();
         const seed = bip39.mnemonicToSeedSync(mnemonic);
@@ -93,7 +100,12 @@ export default class BtcStorage implements ICryptoStorage {
     }
 
     hashMessage(msg){
-        return this.sha256(this.sha256(msg));
+        const prefixMsgBuffer = Buffer.from('Bitcoin Signed Message:\n');
+        const messageBuffer = Buffer.from(msg);
+        const prefix1 = Buffer.from(prefixMsgBuffer.length.toString());
+        const prefix2 = Buffer.from(messageBuffer.length.toString());
+        const buffer = Buffer.concat([prefix1, prefixMsgBuffer, prefix2, messageBuffer]);
+        return this.sha256(this.sha256(buffer));
     }
 
 
