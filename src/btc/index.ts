@@ -17,15 +17,15 @@ export default class BtcStorage implements ICryptoStorage {
 
     constructor() {
         //this.checkSign();
-
-        // const privateKey = 'a121f2bd62a5126dcd4ee357ec783b7678b262e545342ed4986aed7c47dd3129';
-        // const password = 'password';
-
-        // const encrypted = this.encryptWallet(privateKey, password);
-        // const decrypted = this.decryptWallet(encrypted, password);
-        // console.log(decrypted)
     }
 
+    /**
+     * Desired encryption from BIP38
+     * This method is the best to use in production
+     * 
+     * @param privateKey {string} - private key in hex format
+     * @param password {string} - password to encrypt private key
+     */
     encryptWallet(privateKey, password){
         const address = this.getAddressFromPrivateKey(privateKey);
         const wallet = ECPair.fromPrivateKey(Buffer.from(privateKey, 'hex'));
@@ -54,6 +54,13 @@ export default class BtcStorage implements ICryptoStorage {
         return privateKey;
     }
 
+    /**
+     * Simple encryption of any arbituary text, in our case we encrypting private key, 32 byte hex number
+     * This is undesired method for production, it's listed here just as example
+     * 
+     * @param privateKey {string} - private key in hex format
+     * @param password {string} - password to encrypt private key
+     */
     encryptPK(privateKey, password){
         const address = this.getAddressFromPrivateKey(privateKey);
         const enc = new Encryption();
