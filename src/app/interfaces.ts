@@ -114,7 +114,7 @@ export interface ICryptoStorage {
     decryptPK(wallet: EncryptedWallet, password: string): string;
 
     /**
-     * Blockchain specific encryption of bip38 and eth utc
+     * Blockchain specific encryption of BIP38 and eth Web Secret Storage
      */
     encryptWallet(privateKey: string, password: string): EncryptedWallet;
     decryptWallet(wallet: EncryptedWallet, password: string): string;
