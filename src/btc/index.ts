@@ -8,14 +8,38 @@ const HDKey = require('hdkey');
 const secp256k1 = require('secp256k1')
 const coinSelect = require('coinselect');
 import { ICryptoStorage } from '../app/interfaces';
+const bip38 = require('bip38');
+const wif = require('wif');
 import Encryption from '../app/encryption';
-
 
 
 export default class BtcStorage implements ICryptoStorage {
 
     constructor() {
         //this.checkSign();
+
+        const privateKey = 'a121f2bd62a5126dcd4ee357ec783b7678b262e545342ed4986aed7c47dd3129';
+        const password = 'password';
+
+        const encrypted = this.encryptWallet(privateKey, password);
+        console.log(encrypted)
+    }
+
+    encryptWallet(privateKey, password){
+        var myWifString = '5KN7MzqK5wt2TP1fQCYyHBtDrXdJuXbUzm4A9rKAteGu3Qi5CVR'
+        var decoded = wif.decode(myWifString)
+        console.log(decoded)
+        var encryptedKey = bip38.encrypt(decoded.privateKey, decoded.compressed, 'TestingOneTwoThree')
+        console.log(encryptedKey)
+    }
+
+    decryptWallet(wallet, password){
+        var encryptedKey = '6PRVWUbkzzsbcVac2qwfssoUJAN1Xhrg6bNk8J7Nzm5H7kxEbn2Nh2ZoGg'
+        var decryptedKey = bip38.decrypt(encryptedKey, 'TestingOneTwoThree', function (status) {
+          console.log(status.percent) // will print the percent every time current increases by 1000
+        })
+        
+        console.log(wif.encode(0x80, decryptedKey.privateKey, decryptedKey.compressed))
     }
 
     encryptPK(privateKey, password){

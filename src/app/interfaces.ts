@@ -85,13 +85,13 @@ export interface ICryptoStorage {
     /**
      * Standard encryption and decryption of private key with node.js crypto library
      */
-    encryptPK?(privateKey: string, password: string): EncryptedWallet;
-    decryptPK?(wallet: EncryptedWallet, password: string): string;
+    encryptPK(privateKey: string, password: string): EncryptedWallet;
+    decryptPK(wallet: EncryptedWallet, password: string): string;
 
     /**
      * Blockchain specific encryption of bip38 and eth utc
      */
-    encryptWallet?();
-    decryptWallet?();
+    // encryptWallet();
+    // decryptWallet();
         
 }

@@ -6,6 +6,7 @@
  * 
  * https://github.com/ethereumjs/ethereumjs-util - utils work with eth
  * https://github.com/ethereumjs/ethereumjs-tx - generate tx
+ * https://github.com/ethereumjs/ethereumjs-wallet - for key encryption
  * https://github.com/cryptocoinjs/hdkey - use to generate hd wallet based on seed
  * https://github.com/bitcoinjs/bip39 - use to generate mnemonic seed
  * https://github.com/cryptocoinjs/secp256k1-node - not used directly here, but ethereumjs-util based on it
@@ -16,6 +17,7 @@ const util = require('ethereumjs-util');
 const EthereumTx = require('ethereumjs-tx');
 const bip39 = require('bip39');
 const HDKey = require('hdkey');
+const Wallet = require('ethereumjs-wallet');
 import { ICryptoStorage } from '../app/interfaces';
 import Encryption from '../app/encryption';
 
@@ -24,7 +26,24 @@ export default class EthStorage implements ICryptoStorage {
 
    constructor(){
       //this.checkSign();
+
+      const privateKey = 'a121f2bd62a5126dcd4ee357ec783b7678b262e545342ed4986aed7c47dd3129';
+      const password = 'mysecurepassword';
+      const encrypted = this.encryptWallet(privateKey, password);
+      const decrypted = this.decryptWallet(encrypted, password);
+      console.log(decrypted)
    }
+
+   encryptWallet(privateKey, password){
+      const key = Buffer.from(privateKey, 'hex');
+      const wallet = Wallet.fromPrivateKey(key);
+      return wallet.toV3String(password);
+   }
+
+   decryptWallet(wallet, password){
+      return '';
+   }
+
 
    encryptPK(privateKey, password){
        const address = this.getAddressFromPrivateKey(privateKey);
