@@ -6,11 +6,11 @@ const AUTHTAG_LENGTH = 16;
 
 export default class Encryption{
 
-    sha256(msg) {
+    sha256(msg: string): string {
         return crypto.createHash('sha256').update(msg).digest('hex');
     }
 
-    encrypt(msg: string, password: string){
+    encrypt(msg: string, password: string): string {
         const iv = crypto.randomBytes(IV_LENGTH);
         const key = Buffer.from(this.sha256(password), 'hex');
         const cipher = crypto.createCipheriv(ENCRYPTION_ALGORITHM, key, iv, { authTagLength: AUTHTAG_LENGTH});
@@ -20,7 +20,7 @@ export default class Encryption{
         return final.toString('hex');
     }
 
-    decrypt(encrypted: string, password: string){
+    decrypt(encrypted: string, password: string): string {
         const encryptedBuf = Buffer.from(encrypted, 'hex');
         const authTag = encryptedBuf.slice(-AUTHTAG_LENGTH);
         const iv = encryptedBuf.slice(0, IV_LENGTH);
