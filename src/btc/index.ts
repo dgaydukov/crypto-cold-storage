@@ -6,48 +6,15 @@ import { ECPair, payments, TransactionBuilder, address as BitcoinAddress } from 
 const bip39 = require('bip39');
 const HDKey = require('hdkey');
 const secp256k1 = require('secp256k1')
-const { createHash } = require('crypto');
 const coinSelect = require('coinselect');
 import { ICryptoStorage } from '../app/interfaces';
+import Encryption from '../app/encryption';
 
 
-const crypto = require('crypto');
 
 export default class BtcStorage implements ICryptoStorage {
 
     constructor() {
-        const algorithm = 'aes-256-gcm';
-        
-        const encrypt = (msg: string, password: string) => {
-            const iv = crypto.randomBytes(16);
-            const key = Buffer.from(this.sha256(password), 'hex');
-            const cipher = crypto.createCipheriv(algorithm, key, iv, { authTagLength: 16});
-            let encrypted = cipher.update(msg, 'utf8');
-            encrypted = Buffer.concat([encrypted, cipher.final()]);
-            const final = Buffer.concat([iv, encrypted, cipher.getAuthTag()]);
-            return final.toString('hex');
-        }
-        
-        const decrypt = (encrypted: string, password: string) => {
-            const encryptedBuf = Buffer.from(encrypted, 'hex');
-            const authTag = encryptedBuf.slice(-16);
-            const iv = encryptedBuf.slice(0, 16);
-            const encryptedMessage = encryptedBuf.slice(16, -16);
-            const key = Buffer.from(this.sha256(password), 'hex');
-            const decipher = crypto.createDecipheriv(algorithm, key, iv, { authTagLength: 16});
-            decipher.setAuthTag(authTag);
-            let messagetext = decipher.update(encryptedMessage);
-            messagetext = Buffer.concat([messagetext, decipher.final()]);
-            return messagetext.toString('utf8');
-        }
-
-        const privateKey = 'a121f2bd62a5126dcd4ee357ec783b7678b262e545342ed4986aed7c47dd3129';
-        const password = 'mysecurepassword';
-        const encrypted = encrypt(privateKey, password);
-        console.log(encrypted);
-        const decrypted = decrypt(encrypted, password);
-        console.log(decrypted);
-
         //this.checkSign(); 
     }
 
@@ -141,12 +108,12 @@ export default class BtcStorage implements ICryptoStorage {
         const prefix1 = Buffer.from(prefixMsgBuffer.length.toString());
         const prefix2 = Buffer.from(messageBuffer.length.toString());
         const buffer = Buffer.concat([prefix1, prefixMsgBuffer, prefix2, messageBuffer]);
-        return this.sha256(this.sha256(buffer));
+        return this.doublesha256(buffer);
     }
 
-
-    sha256(msg) {
-        return createHash('sha256').update(msg).digest('hex');
+    doublesha256(msg){
+        const enc = new Encryption();
+        return enc.sha256(enc.sha256(msg));
     }
 
     recoverPublicKey(msg, sig) {

@@ -81,4 +81,7 @@ export interface ICryptoStorage {
     recoverPublicKey(msg: string, sig: string): string;
 
     buildRawTx(opts: ITxOpts, privateKey: string): string;
+
+
+        
 }
