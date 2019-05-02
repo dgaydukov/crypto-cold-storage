@@ -26,19 +26,46 @@ export default class EthStorage implements ICryptoStorage {
 
    constructor(){
       //this.checkSign();
+      
+      const privateKey = 'a121f2bd62a5126dcd4ee357ec783b7678b262e545342ed4986aed7c47dd3129';
+      const password = 'password';
+      const encrypted = this.encryptWallet(privateKey, password);
+      const decrypted = this.decryptWallet(encrypted, password);
+      console.log(decrypted);
    }
 
+    /**
+     * Desired encryption from BIP38
+     * This method is the best to use in production
+     * The return format is Web3 Secret Storage (read here for more details https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition)
+     * 
+     * @param privateKey {string} - private key in hex format
+     * @param password {string} - password to encrypt private key
+     */
    encryptWallet(privateKey, password){
       const key = Buffer.from(privateKey, 'hex');
       const wallet = Wallet.fromPrivateKey(key);
-      return wallet.toV3String(password);
+      return JSON.parse(wallet.toV3String(password));
    }
 
    decryptWallet(wallet, password){
-      return '';
+      const decrypted = Wallet.fromV3(wallet, password);
+      const privateKey = decrypted.privKey.toString('hex');
+      const address = this.getAddressFromPrivateKey(privateKey);
+      const _walletAddress = '0x' + wallet.address;
+      if(address !== _walletAddress){
+          throw new Error(`Decrypted private key doesn't correspond to provided address. Your address: ${_walletAddress}, decrypted address: ${address}`);
+      }
+      return privateKey;
    }
 
-
+    /**
+     * Simple encryption of any arbituary text, in our case we encrypting private key, 32 byte hex number
+     * This is undesired method for production, it's listed here just as example
+     * 
+     * @param privateKey {string} - private key in hex format
+     * @param password {string} - password to encrypt private key
+     */
    encryptPK(privateKey, password){
        const address = this.getAddressFromPrivateKey(privateKey);
        const enc = new Encryption();
