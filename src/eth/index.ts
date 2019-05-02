@@ -17,12 +17,33 @@ const EthereumTx = require('ethereumjs-tx');
 const bip39 = require('bip39');
 const HDKey = require('hdkey');
 import { ICryptoStorage } from '../app/interfaces';
+import Encryption from '../app/encryption';
 
 
 export default class EthStorage implements ICryptoStorage {
 
    constructor(){
       //this.checkSign();
+   }
+
+   encryptPK(privateKey, password){
+       const address = this.getAddressFromPrivateKey(privateKey);
+       const enc = new Encryption();
+       const encryptedKey = enc.encrypt(privateKey, password);
+       return {
+           address,
+           encryptedKey,
+       };
+   }
+
+   decryptPK(wallet, password){
+       const enc = new Encryption();
+       const privateKey = enc.decrypt(wallet.encryptedKey, password);
+       const address = this.getAddressFromPrivateKey(privateKey);
+       if(address !== wallet.address){
+           throw new Error(`Decrypted private key doesn't correspond to provided address. Your address: ${wallet.address}, decrypted address: ${address}`);
+       }
+       return privateKey;
    }
 
    checkSign(){
