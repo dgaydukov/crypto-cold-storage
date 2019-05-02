@@ -30,6 +30,7 @@ export default class EthStorage implements ICryptoStorage {
       const privateKey = 'a121f2bd62a5126dcd4ee357ec783b7678b262e545342ed4986aed7c47dd3129';
       const password = 'mysecurepassword';
       const encrypted = this.encryptWallet(privateKey, password);
+      console.log(encrypted)
       const decrypted = this.decryptWallet(encrypted, password);
       console.log(decrypted)
    }

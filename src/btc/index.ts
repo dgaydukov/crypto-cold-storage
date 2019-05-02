@@ -18,12 +18,12 @@ export default class BtcStorage implements ICryptoStorage {
     constructor() {
         //this.checkSign();
 
-        const privateKey = 'a121f2bd62a5126dcd4ee357ec783b7678b262e545342ed4986aed7c47dd3129';
-        const password = 'password';
+        // const privateKey = 'a121f2bd62a5126dcd4ee357ec783b7678b262e545342ed4986aed7c47dd3129';
+        // const password = 'password';
 
-        const encrypted = this.encryptWallet(privateKey, password);
-        const decrypted = this.decryptWallet(encrypted, password);
-        console.log(decrypted)
+        // const encrypted = this.encryptWallet(privateKey, password);
+        // const decrypted = this.decryptWallet(encrypted, password);
+        // console.log(decrypted)
     }
 
     encryptWallet(privateKey, password){
@@ -31,7 +31,7 @@ export default class BtcStorage implements ICryptoStorage {
         const wallet = ECPair.fromPrivateKey(Buffer.from(privateKey, 'hex'));
         const privateKeyWif = wallet.toWIF();
         const decoded = wif.decode(privateKeyWif);
-        const encryptedKey = bip38.encrypt(decoded.privateKey, decoded.compressed, password)
+        const encryptedKey = bip38.encrypt(decoded.privateKey, decoded.compressed, password);
         return {
             address,
             encryptedKey,

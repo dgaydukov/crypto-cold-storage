@@ -44,12 +44,37 @@ export interface IBtcTxOpts {
     changeAddress: string;
 }
 
-export interface EncryptedWallet {
+
+export interface BtcEncryptedWallet {
     encryptedKey: string;
     address: string;
 }
 
+export interface EthEncryptedWallet {
+    address: string,
+    id: string,
+    version: number,
+    crypto:{  
+       cipher: string,
+       ciphertext: string,
+       cipherparams: {  
+          iv: string;
+       },
+       kdf: string,
+       kdfparams:{  
+          dklen: number,
+          n: number,
+          p: number,
+          r: number,
+          salt: string,
+       },
+       mac: string,
+    }
+}
+
 export type ITxOpts = IEthTxOpts | IBtcTxOpts;
+
+export type EncryptedWallet = BtcEncryptedWallet | EthEncryptedWallet;
 
 export interface ICryptoStorage {
     generateHdWallet(): IHDWallet;
@@ -91,7 +116,7 @@ export interface ICryptoStorage {
     /**
      * Blockchain specific encryption of bip38 and eth utc
      */
-    // encryptWallet();
-    // decryptWallet();
+    encryptWallet(privateKey: string, password: string): EncryptedWallet;
+    decryptWallet(wallet: EncryptedWallet, password: string): string;
         
 }
