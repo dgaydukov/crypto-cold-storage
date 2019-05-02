@@ -1,3 +1,5 @@
+import { SrvRecord } from "dns";
+
 /**
  * Different interfaces used accross the project
  */
@@ -40,6 +42,11 @@ export interface IBtcTxOpts {
     from: IUTXO[],
     to: ITarget[],
     changeAddress: string;
+}
+
+export interface EncryptedWallet {
+    encryptedKey: string;
+    address: string;
 }
 
 export type ITxOpts = IEthTxOpts | IBtcTxOpts;
