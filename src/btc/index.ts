@@ -22,24 +22,36 @@ export default class BtcStorage implements ICryptoStorage {
         const password = 'password';
 
         const encrypted = this.encryptWallet(privateKey, password);
-        console.log(encrypted)
+        const decrypted = this.decryptWallet(encrypted, password);
+        console.log(decrypted)
     }
 
     encryptWallet(privateKey, password){
-        var myWifString = '5KN7MzqK5wt2TP1fQCYyHBtDrXdJuXbUzm4A9rKAteGu3Qi5CVR'
-        var decoded = wif.decode(myWifString)
-        console.log(decoded)
-        var encryptedKey = bip38.encrypt(decoded.privateKey, decoded.compressed, 'TestingOneTwoThree')
-        console.log(encryptedKey)
+        const address = this.getAddressFromPrivateKey(privateKey);
+        const wallet = ECPair.fromPrivateKey(Buffer.from(privateKey, 'hex'));
+        const privateKeyWif = wallet.toWIF();
+        const decoded = wif.decode(privateKeyWif);
+        const encryptedKey = bip38.encrypt(decoded.privateKey, decoded.compressed, password)
+        return {
+            address,
+            encryptedKey,
+        };
     }
 
     decryptWallet(wallet, password){
-        var encryptedKey = '6PRVWUbkzzsbcVac2qwfssoUJAN1Xhrg6bNk8J7Nzm5H7kxEbn2Nh2ZoGg'
-        var decryptedKey = bip38.decrypt(encryptedKey, 'TestingOneTwoThree', function (status) {
-          console.log(status.percent) // will print the percent every time current increases by 1000
-        })
-        
-        console.log(wif.encode(0x80, decryptedKey.privateKey, decryptedKey.compressed))
+        const encryptedKey = wallet.encryptedKey;
+        const decryptedKey = bip38.decrypt(encryptedKey, password, (status) => {
+            // will print the percent every time current increases by 1000
+            // console.log(status.percent) 
+        });
+        const privateKeyWif = wif.encode(0x80, decryptedKey.privateKey, decryptedKey.compressed);
+        const keyPair = ECPair.fromWIF(privateKeyWif);
+        const privateKey = keyPair.privateKey.toString('hex');
+        const address = this.getAddressFromPrivateKey(privateKey);
+        if(wallet.address !== address){
+            throw new Error(`Decrypted private key doesn't correspond to provided address. Your address: ${wallet.address}, decrypted address: ${address}`);
+        }
+        return privateKey;
     }
 
     encryptPK(privateKey, password){
