@@ -61,6 +61,7 @@ describe('Bitcoin test', ()=>{
     it('Should encrypt/decrypt any message', ()=>{
         const msg = 'Hello World!!!';
         const password = 'mysecurepassword';
-        const encrypted = storage.encryptPK()
+        const encrypted = storage.encryptMsg(msg, password);
+        console.log(encrypted)
     });
 });
