@@ -60,7 +60,7 @@ export default class EthStorage implements ICryptoStorage {
      * @param privateKey {string} - private key in hex format
      * @param password {string} - password to encrypt private key
      */
-   encryptMsg(privateKey, password){
+   encryptPK(privateKey, password){
        const address = this.getAddressFromPrivateKey(privateKey);
        const enc = new Encryption();
        const encryptedKey = enc.encrypt(privateKey, password);
@@ -70,7 +70,7 @@ export default class EthStorage implements ICryptoStorage {
        };
    }
 
-   decryptMsg(wallet, password){
+   decryptPK(wallet, password){
        const enc = new Encryption();
        const privateKey = enc.decrypt(wallet.encryptedKey, password);
        const address = this.getAddressFromPrivateKey(privateKey);
