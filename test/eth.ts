@@ -60,9 +60,8 @@ describe('Ethereum test', ()=>{
 
 
     it('Should encrypt/decrypt private key', ()=>{
-        console.log(storage.generateWallet())
-        const privateKey = '4d76783eb3d17813387fd60fe8f9435166536f960e0fd56657b61dfac80afcda';
-        const address = '1PKmp9fyCozVm5oKDQSb3ibt5duYiNCqBD';
+        const privateKey = '1fe1d515617cb2fb1d4c9a2e055d65a4c15be927186af72ede1925764b2c818f';
+        const address = '0x126f1c03dd8e09126d656d0e073670461c695803';
         const password = 'mysecurepassword';
         const encrypted = storage.encryptPK(privateKey, password);
         assert.equal(encrypted.address, address, `Encrypted address doesn't match`);
@@ -71,11 +70,11 @@ describe('Ethereum test', ()=>{
     });
 
     it('Should encrypt/decrypt private key with BIP38', ()=>{
-        const privateKey = '4d76783eb3d17813387fd60fe8f9435166536f960e0fd56657b61dfac80afcda';
-        const address = '1PKmp9fyCozVm5oKDQSb3ibt5duYiNCqBD';
+        const privateKey = '1fe1d515617cb2fb1d4c9a2e055d65a4c15be927186af72ede1925764b2c818f';
+        const address = '0x126f1c03dd8e09126d656d0e073670461c695803';
         const password = 'mysecurepassword';
         const encrypted = storage.encryptWallet(privateKey, password);
-        assert.equal(encrypted.address, address, `Encrypted address doesn't match`);
+        assert.equal('0x'+encrypted.address, address, `Encrypted address doesn't match`);
         const decrypted = storage.decryptWallet(encrypted, password);
         assert.equal(decrypted, privateKey, `Decrypted private key doesn't match to initial private key`);
     });
