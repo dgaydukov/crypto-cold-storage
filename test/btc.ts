@@ -57,4 +57,10 @@ describe('Bitcoin test', ()=>{
         const verify = storage.verify(msg, sig, publicKey);
         assert.isTrue(verify, 'Verification should return true');
     });
+
+    it('Should encrypt/decrypt any message', ()=>{
+        const msg = 'Hello World!!!';
+        const password = 'mysecurepassword';
+        const encrypted = storage.encryptPK()
+    });
 });
